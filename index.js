@@ -26,6 +26,12 @@ async function run() {
       const data = await cursor.toArray();
       res.send(data);
     });
+    app.get('/category/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: ObjectId(id)}
+      const result = await categoryCollection.findOne(query)
+      res.send(result)
+    })
 
     app.post('/category-upload', (req, res) => {
       const addData = req.body;
@@ -38,7 +44,6 @@ async function run() {
       const result = await categoryCollection.deleteOne({_id: ObjectId(id)})
       res.send(result)
     })
-
 
   } finally {
     // await client.close();
