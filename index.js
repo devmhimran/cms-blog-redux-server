@@ -33,9 +33,24 @@ async function run() {
       res.send(result)
     })
 
-    app.post('/category-upload', (req, res) => {
+    app.post('/category-upload', async (req, res) => {
       const addData = req.body;
-      const result = categoryCollection.insertOne(addData)
+      const result = await categoryCollection.insertOne(addData)
+      res.send(result)
+      console.log(result)
+    })
+
+    app.put('/category/:id', async(req, res) =>{
+      const id = req.params.id;
+      const updateCategory = req.body;
+      const filter = {_id: ObjectId(id)};
+      const options = { upsert: true };
+      const updateDoc = {
+        $set:{
+          categoryName: updateCategory.categoryName
+        }
+      };
+      const result = await categoryCollection.updateOne(filter, updateDoc, options)
       res.send(result)
     })
 
