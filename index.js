@@ -19,6 +19,7 @@ async function run() {
   try {
 
     const categoryCollection = client.db('cms-blog-redux').collection('category');
+    const blogCollection = client.db('cms-blog-redux').collection('blog');
 
     app.get('/category', async (req, res) => {
       const query = {};
@@ -26,9 +27,17 @@ async function run() {
       const data = await cursor.toArray();
       res.send(data);
     });
-    app.get('/category/:id', async(req, res)=>{
+
+    app.get('/blog', async (req, res) => {
+      const query = {};
+      const cursor = blogCollection.find(query);
+      const data = await cursor.toArray();
+      res.send(data);
+    });
+
+    app.get('/category/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: ObjectId(id)}
+      const query = { _id: ObjectId(id) }
       const result = await categoryCollection.findOne(query)
       res.send(result)
     })
@@ -40,13 +49,20 @@ async function run() {
       console.log(result)
     })
 
-    app.put('/category/:id', async(req, res) =>{
+    app.post('/blog-upload', async (req, res) => {
+      const addData = req.body;
+      const result = await blogCollection.insertOne(addData)
+      res.send(result)
+      console.log(result)
+    })
+
+    app.put('/category/:id', async (req, res) => {
       const id = req.params.id;
       const updateCategory = req.body;
-      const filter = {_id: ObjectId(id)};
+      const filter = { _id: ObjectId(id) };
       const options = { upsert: true };
       const updateDoc = {
-        $set:{
+        $set: {
           categoryName: updateCategory.categoryName
         }
       };
@@ -56,7 +72,12 @@ async function run() {
 
     app.delete('/category-delete/:id', async (req, res) => {
       const id = req.params.id;
-      const result = await categoryCollection.deleteOne({_id: ObjectId(id)})
+      const result = await categoryCollection.deleteOne({ _id: ObjectId(id) })
+      res.send(result)
+    })
+    app.delete('/blog-delete/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await blogCollection.deleteOne({ _id: ObjectId(id) })
       res.send(result)
     })
 
