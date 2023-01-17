@@ -29,10 +29,23 @@ async function run() {
     });
 
     app.get('/blog', async (req, res) => {
+      // const query = {};
+      // const cursor = blogCollection.find(query);
+      // const data = await cursor.toArray();
+      // res.send(data);
+      // console.log(req.query)
+      const page = parseInt(req.query.page) - 1;
+      const size = 5;
       const query = {};
-      const cursor = blogCollection.find(query);
-      const data = await cursor.toArray();
-      res.send(data);
+      const cursor = blogCollection.find(query)
+      let blog;
+      if (page || size) {
+        blog = await cursor.skip(page * size).limit(size).toArray();
+      } else {
+        blog = await cursor.toArray();
+      }
+      console.log(blog.length)
+      res.send(blog);
     });
 
     app.get('/category/:id', async (req, res) => {
@@ -75,6 +88,7 @@ async function run() {
       const result = await categoryCollection.deleteOne({ _id: ObjectId(id) })
       res.send(result)
     })
+
     app.delete('/blog-delete/:id', async (req, res) => {
       const id = req.params.id;
       const result = await blogCollection.deleteOne({ _id: ObjectId(id) })
