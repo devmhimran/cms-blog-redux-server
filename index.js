@@ -35,7 +35,7 @@ async function run() {
       // res.send(data);
       // console.log(req.query)
       const page = parseInt(req.query.page) - 1;
-      const size = 5;
+      const size = 6;
       const query = {};
       const cursor = blogCollection.find(query)
       let blog;
@@ -47,7 +47,12 @@ async function run() {
       console.log(blog.length)
       res.send(blog);
     });
-
+    app.get('/page-count', async (req, res) => {
+      const query = {};
+      const cursor = blogCollection.find(query)
+      const count = await blogCollection.countDocuments();
+      res.send({ count });
+  })
     app.get('/category/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
