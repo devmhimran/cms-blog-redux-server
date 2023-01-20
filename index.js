@@ -28,6 +28,13 @@ async function run() {
       res.send(data);
     });
 
+    app.get('/homeBlog', async (req, res) => {
+      const query = {};
+      const cursor = blogCollection.find(query);
+      const data = await cursor.toArray();
+      res.send(data);
+    });
+
     app.get('/blog', async (req, res) => {
       // const query = {};
       // const cursor = blogCollection.find(query);
@@ -35,7 +42,7 @@ async function run() {
       // res.send(data);
       // console.log(req.query)
       const page = parseInt(req.query.page) - 1;
-      const size = 6;
+      const size = 10;
       const query = {};
       const cursor = blogCollection.find(query)
       let blog;
@@ -47,12 +54,21 @@ async function run() {
       console.log(blog.length)
       res.send(blog);
     });
+
+    app.get('/blog/:id',async (req, res)=>{
+      const id = req.params.id;
+      const query = {_id: ObjectId(id)};
+      const singleBlog = await blogCollection.findOne(query);
+      res.send(singleBlog);
+    })
+
     app.get('/page-count', async (req, res) => {
       const query = {};
       const cursor = blogCollection.find(query)
       const count = await blogCollection.countDocuments();
       res.send({ count });
-  })
+    })
+
     app.get('/category/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
