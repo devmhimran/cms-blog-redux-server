@@ -36,11 +36,6 @@ async function run() {
     });
 
     app.get('/blog', async (req, res) => {
-      // const query = {};
-      // const cursor = blogCollection.find(query);
-      // const data = await cursor.toArray();
-      // res.send(data);
-      // console.log(req.query)
       const page = parseInt(req.query.page) - 1;
       const size = 10;
       const query = {};
@@ -51,7 +46,6 @@ async function run() {
       } else {
         blog = await cursor.toArray();
       }
-      console.log(blog.length)
       res.send(blog);
     });
 
@@ -80,14 +74,12 @@ async function run() {
       const addData = req.body;
       const result = await categoryCollection.insertOne(addData)
       res.send(result)
-      console.log(result)
     })
 
     app.post('/blog-upload', async (req, res) => {
       const addData = req.body;
       const result = await blogCollection.insertOne(addData)
       res.send(result)
-      console.log(result)
     })
 
     app.put('/category/:id', async (req, res) => {
