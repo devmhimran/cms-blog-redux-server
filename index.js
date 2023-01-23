@@ -27,6 +27,19 @@ async function run() {
       const data = await cursor.toArray();
       res.send(data);
     });
+    app.get('/category-page', async (req, res) => {
+      const page = parseInt(req.query.page) - 1;
+      const size = 10;
+      const query = {};
+      const cursor = categoryCollection.find(query)
+      let category;
+      if (page || size) {
+        category = await cursor.skip(page * size).limit(size).toArray();
+      } else {
+        category = await cursor.toArray();
+      }
+      res.send(category);
+    });
 
     app.get('/homeBlog', async (req, res) => {
       const query = {};
