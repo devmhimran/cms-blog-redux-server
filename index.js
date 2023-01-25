@@ -62,9 +62,9 @@ async function run() {
       res.send(blog);
     });
 
-    app.get('/blog/:id',async (req, res)=>{
+    app.get('/blog/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const singleBlog = await blogCollection.findOne(query);
       res.send(singleBlog);
     })
@@ -106,6 +106,24 @@ async function run() {
         }
       };
       const result = await categoryCollection.updateOne(filter, updateDoc, options)
+      res.send(result)
+    })
+
+    app.put('/update-blog/:id', async (req, res) => {
+      const id = req.params.id;
+      const updateBlog = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          blogTitle: updateBlog.blogTitle,
+          content: updateBlog.content,
+          blogCategory: updateBlog.blogCategory,
+          featuredImage: updateBlog.blogImage,
+          featuredBlog: updateBlog.featuredBlog
+        }
+      };
+      const result = await blogCollection.updateOne(filter, updateDoc, options)
       res.send(result)
     })
 
