@@ -20,6 +20,8 @@ async function run() {
 
     const categoryCollection = client.db('cms-blog-redux').collection('category');
     const blogCollection = client.db('cms-blog-redux').collection('blog');
+    const commentCollection = client.db('cms-blog-redux').collection('comment');
+    const userCollection = client.db('cms-blog-redux').collection('user');
 
     app.get('/category', async (req, res) => {
       const query = {};
@@ -89,11 +91,38 @@ async function run() {
       res.send(result)
     })
 
+    app.post('/comment-upload', async (req, res) => {
+      const addData = req.body;
+      const result = await commentCollection.insertOne(addData)
+      res.send(result)
+    })
+
+    app.get('/comment', async (req, res) => {
+      const query = {};
+      const cursor = commentCollection.find(query);
+      const data = await cursor.toArray();
+      res.send(data);
+    });
+
+    app.get('/user', async (req, res) => {
+      const query = {};
+      const cursor = userCollection.find(query);
+      const data = await cursor.toArray();
+      res.send(data);
+    });
+
     app.post('/blog-upload', async (req, res) => {
       const addData = req.body;
       const result = await blogCollection.insertOne(addData)
       res.send(result)
     })
+
+    app.post('/category-upload', async (req, res) => {
+      const addData = req.body;
+      const result = await categoryCollection.insertOne(addData)
+      res.send(result)
+    })
+
 
     app.put('/category/:id', async (req, res) => {
       const id = req.params.id;
