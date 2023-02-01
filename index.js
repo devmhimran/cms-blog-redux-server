@@ -61,6 +61,7 @@ async function run() {
       } else {
         blog = await cursor.toArray();
       }
+      console.log(cursor)
       res.send(blog);
     });
 
@@ -123,6 +124,38 @@ async function run() {
       res.send(result)
     })
 
+    // app.put('/comment-update/:id', async (req, res) => {
+      // const id = req.params.id;
+      // const updateComment = req.body;
+      // const filter = { _id: ObjectId(id) }
+      // const options = { upsert: true }
+      // const updateDoc = {
+      //   $set: {
+      //     blogComment: updateComment
+      //   }
+      // }
+      // console.log(id)
+      // console.log('id')
+      // const result = await commentCollection.updateOne(filter, updateDoc, options)
+      // res.send(result)
+    
+    // })
+
+    app.put('/comment-update/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const updateComment = req.body;
+      console.log(updateComment)
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          blogComment: updateComment.editComment
+        }
+      };
+      const result = await commentCollection.updateOne(filter, updateDoc, options)
+      res.send(result)
+    })
 
     app.put('/category/:id', async (req, res) => {
       const id = req.params.id;
