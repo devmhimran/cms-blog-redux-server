@@ -3,6 +3,7 @@ const app = express()
 const port = process.env.PORT || 5000
 var cors = require('cors')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
 
 app.use(cors())
 app.use(express.json())
@@ -13,7 +14,20 @@ require('dotenv').config()
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.fshf8lh.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-
+function verifyJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send({ message: 'UnAuthorized access' });
+  }
+  const token = authHeader.split(' ')[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: 'forbidden access' })
+    }
+    req.decoded = decoded;
+    next();
+  });
+}
 
 async function run() {
   try {
@@ -54,14 +68,13 @@ async function run() {
       const page = parseInt(req.query.page) - 1;
       const size = 10;
       const query = {};
-      const cursor = blogCollection.find(query)
+      const cursor = blogCollection.find(query).sort({ _id: -1 })
       let blog;
       if (page || size) {
         blog = await cursor.skip(page * size).limit(size).toArray();
       } else {
         blog = await cursor.toArray();
       }
-      console.log(cursor)
       res.send(blog);
     });
 
@@ -112,6 +125,14 @@ async function run() {
       res.send(data);
     });
 
+    app.get('/user/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { uid: id }
+      const result = await userCollection.findOne(query)
+      console.log(result)
+      res.send(result)
+    });
+
     app.post('/blog-upload', async (req, res) => {
       const addData = req.body;
       const result = await blogCollection.insertOne(addData)
@@ -124,21 +145,37 @@ async function run() {
       res.send(result)
     })
 
+    app.put('/user/:email', async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: '24h' });
+      res.send({ result, token });
+    })
+    // app.put('/user/signin/:email', async(req, res) =>{
+    //   const email = req.params.email;
+    //   const user = req.body
+    // })
     // app.put('/comment-update/:id', async (req, res) => {
-      // const id = req.params.id;
-      // const updateComment = req.body;
-      // const filter = { _id: ObjectId(id) }
-      // const options = { upsert: true }
-      // const updateDoc = {
-      //   $set: {
-      //     blogComment: updateComment
-      //   }
-      // }
-      // console.log(id)
-      // console.log('id')
-      // const result = await commentCollection.updateOne(filter, updateDoc, options)
-      // res.send(result)
-    
+    // const id = req.params.id;
+    // const updateComment = req.body;
+    // const filter = { _id: ObjectId(id) }
+    // const options = { upsert: true }
+    // const updateDoc = {
+    //   $set: {
+    //     blogComment: updateComment
+    //   }
+    // }
+    // console.log(id)
+    // console.log('id')
+    // const result = await commentCollection.updateOne(filter, updateDoc, options)
+    // res.send(result)
+
     // })
 
     app.put('/comment-update/:id', async (req, res) => {
