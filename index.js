@@ -99,13 +99,7 @@ async function run() {
       res.send(result)
     })
 
-    app.post('/category-upload', async (req, res) => {
-      const addData = req.body;
-      const result = await categoryCollection.insertOne(addData)
-      res.send(result)
-    })
-
-    app.post('/comment-upload', async (req, res) => {
+    app.post('/comment-upload', verifyJWT, async (req, res) => {
       const addData = req.body;
       const result = await commentCollection.insertOne(addData)
       res.send(result)
@@ -125,21 +119,20 @@ async function run() {
       res.send(data);
     });
 
-    app.get('/user/:id', verifyJWT, async (req, res) => {
+    app.get('/user/:id', async (req, res) => {
       const id = req.params.id;
       const query = { uid: id }
       const result = await userCollection.findOne(query)
-      console.log(result)
       res.send(result)
     });
 
-    app.post('/blog-upload', async (req, res) => {
+    app.post('/blog-upload', verifyJWT, async (req, res) => {
       const addData = req.body;
       const result = await blogCollection.insertOne(addData)
       res.send(result)
     })
 
-    app.post('/category-upload', async (req, res) => {
+    app.post('/category-upload', verifyJWT,async (req, res) => {
       const addData = req.body;
       const result = await categoryCollection.insertOne(addData)
       res.send(result)
@@ -178,7 +171,7 @@ async function run() {
 
     // })
 
-    app.put('/comment-update/:id', async (req, res) => {
+    app.put('/comment-update/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       console.log(id)
       const updateComment = req.body;
@@ -194,7 +187,7 @@ async function run() {
       res.send(result)
     })
 
-    app.put('/category/:id', async (req, res) => {
+    app.put('/category/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const updateCategory = req.body;
       const filter = { _id: ObjectId(id) };
@@ -208,7 +201,7 @@ async function run() {
       res.send(result)
     })
 
-    app.put('/update-blog/:id', async (req, res) => {
+    app.put('/update-blog/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const updateBlog = req.body;
       const filter = { _id: ObjectId(id) };
