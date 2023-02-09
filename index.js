@@ -36,6 +36,7 @@ async function run() {
     const blogCollection = client.db('cms-blog-redux').collection('blog');
     const commentCollection = client.db('cms-blog-redux').collection('comment');
     const userCollection = client.db('cms-blog-redux').collection('user');
+    const favoriteCollection = client.db('cms-blog-redux').collection('favorite');
 
     app.get('/category', async (req, res) => {
       const query = {};
@@ -135,6 +136,14 @@ async function run() {
     app.post('/category-upload', verifyJWT,async (req, res) => {
       const addData = req.body;
       const result = await categoryCollection.insertOne(addData)
+      res.send(result)
+    })
+
+    app.put('/add-favorite', verifyJWT, async (req, res)=>{
+      const email = req.query.email
+      const data = req.body;
+      const filter = {email}
+      const result = await favoriteCollection.insertOne(data)
       res.send(result)
     })
 
