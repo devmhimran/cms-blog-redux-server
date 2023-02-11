@@ -100,6 +100,23 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/favorite-data', verifyJWT, async (req, res) => {
+      const email = req.query.email;
+      // const query = { userEmail: email }
+      // const result = await favoriteCollection.find(query).toArray()
+      // res.send(result)
+
+      const decodedEmail = req.decoded.email
+      if (email === decodedEmail) {
+        const query = { userEmail: email }
+        const result = await favoriteCollection.find(query).toArray()
+        res.send(result)
+      }
+
+      console.log(email)
+      console.log('decoded',req.decoded.email)
+    })
+
     app.post('/comment-upload', verifyJWT, async (req, res) => {
       const addData = req.body;
       const result = await commentCollection.insertOne(addData)
@@ -133,17 +150,23 @@ async function run() {
       res.send(result)
     })
 
-    app.post('/category-upload', verifyJWT,async (req, res) => {
+    app.post('/category-upload', verifyJWT, async (req, res) => {
       const addData = req.body;
       const result = await categoryCollection.insertOne(addData)
       res.send(result)
     })
 
-    app.put('/add-favorite', verifyJWT, async (req, res)=>{
-      const email = req.query.email
+    app.put('/add-favorite', async (req, res) => {
+      const id = req.query.postId
       const data = req.body;
-      const filter = {email}
-      const result = await favoriteCollection.insertOne(data)
+      const filter = { postId: id }
+      const options = { upsert: true };
+      console.log(id)
+      console.log(data)
+      const updateDoc = {
+        $set: data,
+      };
+      const result = await favoriteCollection.updateOne(filter, updateDoc, options);
       res.send(result)
     })
 
