@@ -252,7 +252,12 @@ async function run() {
       const id = req.params.id;
       const result = await favoriteCollection.deleteOne({ postId: id })
       res.send(result)
-      console.log(id)
+    })
+
+    app.delete('/delete-comment/:id', verifyJWT,async (req, res) => {
+      const id = req.params.id;
+      const result = await commentCollection.deleteOne({ _id: ObjectId(id) })
+      res.send(result)
     })
 
     app.delete('/category-delete/:id', async (req, res) => {
