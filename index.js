@@ -112,9 +112,6 @@ async function run() {
         const result = await favoriteCollection.find(query).toArray()
         res.send(result)
       }
-
-      console.log(email)
-      console.log('decoded',req.decoded.email)
     })
 
     app.post('/comment-upload', verifyJWT, async (req, res) => {
@@ -249,6 +246,13 @@ async function run() {
       };
       const result = await blogCollection.updateOne(filter, updateDoc, options)
       res.send(result)
+    })
+
+    app.delete('/delete-favorite/:id', verifyJWT,async (req, res) => {
+      const id = req.params.id;
+      const result = await favoriteCollection.deleteOne({ postId: id })
+      res.send(result)
+      console.log(id)
     })
 
     app.delete('/category-delete/:id', async (req, res) => {
