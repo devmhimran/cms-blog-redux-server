@@ -9,8 +9,6 @@ app.use(cors())
 app.use(express.json())
 require('dotenv').config()
 
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.fshf8lh.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -44,6 +42,7 @@ async function run() {
       const data = await cursor.toArray();
       res.send(data);
     });
+
     app.get('/category-page', async (req, res) => {
       const page = parseInt(req.query.page) - 1;
       const size = 10;
@@ -102,10 +101,6 @@ async function run() {
 
     app.get('/favorite-data', verifyJWT, async (req, res) => {
       const email = req.query.email;
-      // const query = { userEmail: email }
-      // const result = await favoriteCollection.find(query).toArray()
-      // res.send(result)
-
       const decodedEmail = req.decoded.email
       if (email === decodedEmail) {
         const query = { userEmail: email }
@@ -158,8 +153,6 @@ async function run() {
       const data = req.body;
       const filter = { postId: id }
       const options = { upsert: true };
-      console.log(id)
-      console.log(data)
       const updateDoc = {
         $set: data,
       };
@@ -179,32 +172,10 @@ async function run() {
       const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: '24h' });
       res.send({ result, token });
     })
-    // app.put('/user/signin/:email', async(req, res) =>{
-    //   const email = req.params.email;
-    //   const user = req.body
-    // })
-    // app.put('/comment-update/:id', async (req, res) => {
-    // const id = req.params.id;
-    // const updateComment = req.body;
-    // const filter = { _id: ObjectId(id) }
-    // const options = { upsert: true }
-    // const updateDoc = {
-    //   $set: {
-    //     blogComment: updateComment
-    //   }
-    // }
-    // console.log(id)
-    // console.log('id')
-    // const result = await commentCollection.updateOne(filter, updateDoc, options)
-    // res.send(result)
-
-    // })
 
     app.put('/comment-update/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
-      console.log(id)
       const updateComment = req.body;
-      console.log(updateComment)
       const filter = { _id: ObjectId(id) };
       const options = { upsert: true };
       const updateDoc = {
