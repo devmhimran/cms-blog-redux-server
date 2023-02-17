@@ -64,6 +64,13 @@ async function run() {
       res.send(data);
     });
 
+    app.get('/users', verifyJWT,async (req, res) => {
+      const query = {};
+      const cursor = userCollection.find(query);
+      const data = await cursor.toArray();
+      res.send(data);
+    });
+
     app.get('/blog', async (req, res) => {
       const page = parseInt(req.query.page) - 1;
       const size = 10;
@@ -240,6 +247,12 @@ async function run() {
     app.delete('/blog-delete/:id', async (req, res) => {
       const id = req.params.id;
       const result = await blogCollection.deleteOne({ _id: ObjectId(id) })
+      res.send(result)
+    })
+
+    app.delete('/user-delete/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await userCollection.deleteOne({ _id: ObjectId(id) })
       res.send(result)
     })
 
