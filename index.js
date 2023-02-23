@@ -64,14 +64,14 @@ async function run() {
       res.send(data);
     });
 
-    app.get('/users', verifyJWT,async (req, res) => {
+    app.get('/users', verifyJWT, async (req, res) => {
       const query = {};
       const cursor = userCollection.find(query);
       const data = await cursor.toArray();
       res.send(data);
     });
 
-    app.get('/blog', async (req, res) => {
+    app.get('/blog', verifyJWT,async (req, res) => {
       const page = parseInt(req.query.page) - 1;
       const size = 10;
       const query = {};
@@ -166,7 +166,7 @@ async function run() {
       const result = await favoriteCollection.updateOne(filter, updateDoc, options);
       res.send(result)
     })
-
+verifyJWT
     app.put('/user/:email', async (req, res) => {
       const email = req.params.email;
       const user = req.body;
@@ -226,13 +226,13 @@ async function run() {
       res.send(result)
     })
 
-    app.delete('/delete-favorite/:id', verifyJWT,async (req, res) => {
+    app.delete('/delete-favorite/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const result = await favoriteCollection.deleteOne({ postId: id })
       res.send(result)
     })
 
-    app.delete('/delete-comment/:id', verifyJWT,async (req, res) => {
+    app.delete('/delete-comment/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const result = await commentCollection.deleteOne({ _id: ObjectId(id) })
       res.send(result)
