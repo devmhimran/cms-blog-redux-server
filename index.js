@@ -71,7 +71,7 @@ async function run() {
       res.send(data);
     });
 
-    app.get('/blog', verifyJWT,async (req, res) => {
+    app.get('/blog', verifyJWT, async (req, res) => {
       const page = parseInt(req.query.page) - 1;
       const size = 10;
       const query = {};
@@ -166,7 +166,26 @@ async function run() {
       const result = await favoriteCollection.updateOne(filter, updateDoc, options);
       res.send(result)
     })
-verifyJWT
+
+    app.put('/user/admin/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const adminRequest = req.decoded.email;
+      const data = req.body
+      // console.log(data)
+      const adminRequestAccount = await userCollection.findOne({ email: adminRequest });
+      console.log(adminRequestAccount)
+      if (adminRequestAccount.role === 'admin') {
+        const filter = { _id: ObjectId(id) };
+        const updateDoc = {
+          $set: { role: data.role },
+        };
+        const result = await userCollection.updateOne(filter, updateDoc);
+        res.send(result);
+      } else {
+        return res.status(403).send({ message: 'forbidden access' })
+      }
+    })
+
     app.put('/user/:email', async (req, res) => {
       const email = req.params.email;
       const user = req.body;
