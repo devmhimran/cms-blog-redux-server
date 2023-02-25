@@ -186,6 +186,13 @@ async function run() {
       }
     })
 
+    app.get('/admin/:email', verifyJWT,async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const adminCheck = user.role === 'admin';
+      res.send({ admin: adminCheck })
+    })
+
     app.put('/user/:email', async (req, res) => {
       const email = req.params.email;
       const user = req.body;
