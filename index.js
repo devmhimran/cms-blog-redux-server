@@ -85,6 +85,11 @@ async function run() {
       res.send(blog);
     });
 
+    app.get('/your-blog', verifyJWT, async(req, res)=>{
+      const email = req.decoded.email
+      console.log(email)
+    })
+
     app.get('/blog/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
