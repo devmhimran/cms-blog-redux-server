@@ -90,7 +90,7 @@ async function run() {
       console.log(email)
     })
 
-    app.get('/blog/:id', async (req, res) => {
+    app.get('/blog/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const singleBlog = await blogCollection.findOne(query);
